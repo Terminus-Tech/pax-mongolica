@@ -3,19 +3,17 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
+    public GameObject gameController;
 
     Vector2 inputDir = Vector2.zero;
     Vector2 gridPos = Vector2.zero;
+
     float moveTime = 0;
     bool isMoving = false;
     public float speed = 1;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
+    public bool moveable = false;
+    public int rations;
 
     // Update is called once per frame
     void FixedUpdate()
@@ -30,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
         rb.MovePosition(Vector2.Lerp(gridPos, gridPos + inputDir, (Time.time - moveTime) * speed));
 
-        if (Keyboard.current.anyKey.IsActuated() && !isMoving)
+        if (Keyboard.current.anyKey.IsActuated() && !isMoving && moveable)
         {
             
             if ((Keyboard.current.aKey.IsActuated() || Keyboard.current.leftArrowKey.IsActuated()) && inputDir.x > -1)
@@ -62,9 +60,17 @@ public class PlayerController : MonoBehaviour
 
         if (Vector2.Distance(rb.transform.position, gridPos + inputDir) < 0.1f)
         {
+            if (isMoving)
+            {
+                rations--;
+            }
             isMoving = false;
         }
 
+        if (rations <= 0 && moveable)
+        {
+            gameController.GetComponent<GameController>().Encounter("lose", new string[] { "You lose...\n>", "Press any key to try again" });
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
