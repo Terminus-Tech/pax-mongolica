@@ -3,8 +3,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private Animator animator;
+
+    bool walkRight = false;
     public Rigidbody2D rb;
     public GameObject gameController;
+    public AudioSource footstepAudio;
 
     Vector2 inputDir = Vector2.zero;
     Vector2 gridPos = Vector2.zero;
@@ -71,6 +75,30 @@ public class PlayerController : MonoBehaviour
         {
             gameController.GetComponent<GameController>().Encounter("lose", new string[] { "You lose...\n>", "Press any key to try again" });
         }
+
+        if (isMoving)
+        {
+            animator.SetBool("Walking", true);
+            if (inputDir.x > 0)
+            {
+                walkRight = true;
+                rb.transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (inputDir.x < 0)
+            {
+                walkRight = false;
+                rb.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            if (!footstepAudio.isPlaying)
+            {
+                footstepAudio.Play();
+            }
+        }
+        else
+        {
+            animator.SetBool("Walking", false);
+        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -81,4 +109,5 @@ public class PlayerController : MonoBehaviour
             isMoving = false;
         }
     }
+
 }
