@@ -10,6 +10,11 @@ public class GameController : MonoBehaviour
 {
     public GameObject player;
     public GameObject canvas;
+    public AudioSource audioSource;
+    public AudioClip key; 
+    public AudioClip good;
+    public AudioClip bad;
+
 
     int dialogIndex = 0;
     string[] textlist = new string[] { };
@@ -56,6 +61,7 @@ public class GameController : MonoBehaviour
                     case "friendly":
                         canvas.transform.GetChild(1).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations += friendlyRations;
+                        audioSource.PlayOneShot(key);
                         break;
                     case "hostile":
                         canvas.transform.GetChild(2).gameObject.SetActive(false);
@@ -101,15 +107,19 @@ public class GameController : MonoBehaviour
                 break;
             case "hostile":
                 canvas.transform.GetChild(2).gameObject.SetActive(true);
+                audioSource.PlayOneShot(bad);
                 break;
             case "terrain":
                 canvas.transform.GetChild(3).gameObject.SetActive(true);
+                audioSource.PlayOneShot(bad);
                 break;
             case "win":
                 canvas.transform.GetChild(4).gameObject.SetActive(true);
+                audioSource.PlayOneShot(good);
                 break;
             case "lose":
                 canvas.transform.GetChild(5).gameObject.SetActive(true);
+                audioSource.PlayOneShot(bad);
                 break;
         }
 
