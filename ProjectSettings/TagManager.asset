@@ -3,8 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags:
-  - Wall
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -17,7 +16,7 @@ TagManager:
   - Camera
   - Encounter
   - Wall
-  - Boundary
+  - Bound
   - 
   - 
   - 
