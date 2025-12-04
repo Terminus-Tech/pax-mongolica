@@ -5,9 +5,8 @@ public class PlayerController : MonoBehaviour
 {
     //public Animator animator;
 
-    bool walkRight = false;
     public Rigidbody2D rb;
-    //public GameObject gameController;
+    public GameObject gameController;
     //public AudioSource footstepAudio;
 
     Vector2 inputDir = Vector2.zero;
@@ -73,7 +72,7 @@ public class PlayerController : MonoBehaviour
 
         if (rations <= 0 && moveable)
         {
-            //gameController.GetComponent<GameController>().Encounter("lose", new string[] { "You lose...\n>", "Press any key to try again" });
+            gameController.GetComponent<GameController>().Encounter("lose", new string[] { "You lose...\n>", "Press any key to try again" });
         }
 
         if (isMoving)
@@ -81,12 +80,10 @@ public class PlayerController : MonoBehaviour
             //animator.SetBool("Walking", true);
             if (inputDir.x > 0)
             {
-                walkRight = true;
                 rb.transform.localScale = new Vector3(1, 1, 1);
             }
             else if (inputDir.x < 0)
             {
-                walkRight = false;
                 rb.transform.localScale = new Vector3(-1, 1, 1);
             }
             //if (!footstepAudio.isPlaying)
@@ -103,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
         {
             Debug.Log("Collided with wall!");
             isMoving = false;
