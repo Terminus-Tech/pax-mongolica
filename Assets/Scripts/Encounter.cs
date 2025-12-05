@@ -10,7 +10,7 @@ public class Encounter : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.gameObject.CompareTag("Player"))
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             gameController.GetComponent<GameController>().Encounter(encounterType, dialogLines);
         }

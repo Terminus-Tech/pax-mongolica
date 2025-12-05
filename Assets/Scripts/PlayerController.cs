@@ -3,9 +3,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
+    public Animator animator;
 
-    bool walkRight = false;
     public Rigidbody2D rb;
     public GameObject gameController;
     public AudioSource footstepAudio;
@@ -81,12 +80,10 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("Walking", true);
             if (inputDir.x > 0)
             {
-                walkRight = true;
                 rb.transform.localScale = new Vector3(1, 1, 1);
             }
             else if (inputDir.x < 0)
             {
-                walkRight = false;
                 rb.transform.localScale = new Vector3(-1, 1, 1);
             }
             if (!footstepAudio.isPlaying)
@@ -103,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
         {
             Debug.Log("Collided with wall!");
             isMoving = false;
