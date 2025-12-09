@@ -1,7 +1,10 @@
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -37,9 +40,9 @@ public class GameController : MonoBehaviour
             {
                 if (!dialogProgress && Keyboard.current.anyKey.IsActuated())
                 {
+                    canvas.transform.GetChild(8).gameObject.GetComponent<TextMeshProUGUI>().text = textlist[dialogIndex];
                     dialogIndex++;
                     dialogProgress = true;
-                    canvas.transform.GetChild(8).gameObject.GetComponent<TextMeshProUGUI>().text = textlist[dialogIndex];
                 } else if (dialogProgress && !Keyboard.current.anyKey.IsActuated())
                 {
                     dialogProgress = false;
