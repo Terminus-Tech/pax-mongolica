@@ -1,5 +1,6 @@
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,8 +10,14 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public GameObject player;
+    public GameObject mainCamera;
     public GameObject canvas;
+    public GameObject encounters;
+
+    public WorldGen worldGen;
+
     public AudioSource audioSource;
+
     public AudioClip key; 
     public AudioClip good;
     public AudioClip bad;
@@ -22,14 +29,19 @@ public class GameController : MonoBehaviour
     bool dialogProgress = false;
     bool dialogActive = false;
 
-    public int friendlyRations = 5;
-    public int hostileRations = 5;
-    public int terrainRations = 5;
+    public int friendlyRations;
+    public int hostileRations;
+    public int terrainRations;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Encounter("menu", new string[] { "Press any key to begin" });
+        if (SceneManager.GetActiveScene().name == "MainScene")
+        {
+            worldGen.GenerateMap(player, mainCamera, encounters);
+            Encounter("menu", new string[] { "Press any key to begin" });
+        }
+            
     }
 
     private void FixedUpdate()
@@ -61,18 +73,22 @@ public class GameController : MonoBehaviour
                     case "friendly":
                         canvas.transform.GetChild(1).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations += friendlyRations;
+
+                        encounters.transform.GetChild(0).gameObject.SetActive(false);
                         audioSource.PlayOneShot(key);
                         break;
                     case "hostile":
                         canvas.transform.GetChild(2).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations -= hostileRations;
+
+                        encounters.transform.GetChild(1).gameObject.SetActive(false);
                         break;
                     case "terrain":
                         canvas.transform.GetChild(3).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations -= terrainRations;
                         break;
                     case "win":
-                        SceneManager.LoadScene("MainScene");
+                        SceneManager.LoadScene("TownScene");
                         break;
                     case "lose":
                         SceneManager.LoadScene("MainScene");

@@ -23,19 +23,49 @@ public class WorldGen : MonoBehaviour
     
     public float fwdCh;
     public float vrtCh;
-    float upCh;
+    public float upCh;
     public float branchCh;
 
+    public Vector2Int startPos;
     public List<Vector2Int> roadPoints = new List<Vector2Int>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void GenerateMap(GameObject player, GameObject mainCamera, GameObject encounters)
     {
         roadArea = new Vector2Int(mapSize.x / roadWidth, mapSize.y / roadWidth);
-        roadPoints.Add(new Vector2Int(0, UnityEngine.Random.Range(0, roadArea.y)));
+        startPos = new Vector2Int(0, UnityEngine.Random.Range(0, roadArea.y));
+        roadPoints.Add(startPos);
+
         DrawBorder();
         GenerateRoad();
         FillSand();
+
+        // Position player and camera
+        player.GetComponent<Transform>().position = new Vector3(0, startPos.y * roadWidth, 0);
+        mainCamera.GetComponent<Transform>().position = new Vector3(5, startPos.y * roadWidth, -10);
+
+        // Position encounters
+        for (int i = 0; i < encounters.transform.childCount -1; i++)
+        {
+            GameObject encounter = encounters.transform.GetChild(i).gameObject;
+            bool placed = false;
+            int iterations = 0;
+            while (!placed && iterations < 1000)
+            {
+                Vector3Int encounterPos = new Vector3Int(UnityEngine.Random.Range(1, roadArea.x - 1), UnityEngine.Random.Range(1, roadArea.y - 1), 0);
+                if (road.GetTile(encounterPos) != null)
+                {
+                    encounter.GetComponent<Transform>().position = encounterPos;
+                    placed = true;
+                }
+                iterations++;
+            }
+            if (iterations >= 1000)
+            {
+                Debug.Log("Encounter placement aborted: too many iterations");
+            }
+                
+        }
+        encounters.transform.GetChild(encounters.transform.childCount - 1).gameObject.GetComponent<Transform>().position = new Vector3(mapSize.x, mapSize.y / 2 + 0.5f, 0); // Place goal at the end
     }
 
     void DrawBorder()
@@ -100,7 +130,7 @@ public class WorldGen : MonoBehaviour
             {
                 if (curPos.x < roadArea.x - 1)
                 {
-                    CalcChances();
+                    //CalcChances();
                     float randVal = UnityEngine.Random.value;
                     // Choose a direction to go
                     if (randVal <= fwdCh && curPos.x < roadArea.x)
@@ -169,12 +199,11 @@ public class WorldGen : MonoBehaviour
 
         }
 
-        void CalcChances()
-        {
-            //float chance = Mathf.Clamp(( -(( curPos.x / roadArea.x ) * ( curPos.y / roadArea.y )) + 0.5f + (0.5f * (curPos.x / roadArea.x)) ), 0, 1);
-            //upCh = vrtCh * chance;
-            upCh = vrtCh / 2;
-        }
+        //void CalcChances()
+        //{
+        //    float chance = Mathf.Clamp((-((curPos.x / roadArea.x) * (curPos.y / roadArea.y)) + 0.5f + (0.5f * (curPos.x / roadArea.x))), 0, 1);
+        //    upCh = vrtCh * chance;
+        //}
     }
 
     void FillSand()
