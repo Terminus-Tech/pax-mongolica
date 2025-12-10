@@ -149,7 +149,7 @@ Transform:
   m_GameObject: {fileID: 38978913}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.01, y: 0.01, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10254,7 +10254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &158145103
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10297,7 +10297,7 @@ MonoBehaviour:
   m_text: ' x 132'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1bbdf8f6a8bec3c4980dd508b47d095b, type: 2}
-  m_sharedMaterial: {fileID: 8838543622088216836, guid: 33769fcc43e8f3a428ddc3da8b479b6c, type: 2}
+  m_sharedMaterial: {fileID: -7340377912552715186, guid: 1bbdf8f6a8bec3c4980dd508b47d095b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10556,8 +10556,8 @@ MonoBehaviour:
   gameController: {fileID: 1480640590}
   footstepAudio: {fileID: 311544898}
   speed: 2
-  moveable: 0
-  rations: 70
+  moveable: 1
+  rations: 100
 --- !u!95 &311544896
 Animator:
   serializedVersion: 7
@@ -10710,7 +10710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &385521413
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11107,7 +11107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 519420034}
   playerRb: {fileID: 311544893}
-  speed: 2
+  speed: 5
 --- !u!50 &519420034
 Rigidbody2D:
   serializedVersion: 5
@@ -11419,7 +11419,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -6644265562674651013, guid: f7bf10d503f894b42b13bc60cd4be2e1, type: 3}
+  m_Sprite: {fileID: 8619175987092441086, guid: a8e7e66bb796dae4d806f93a640166b2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11852,7 +11852,7 @@ MonoBehaviour:
   gameController: {fileID: 1480640590}
   encounterType: win
   dialogLines:
-  - '*You made it to the Town!*\n>'
+  - '*Thank you for Playing!*\n>'
   - Press any key to play again
 --- !u!212 &1057407523
 SpriteRenderer:
@@ -15253,7 +15253,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1390228776
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15357,7 +15357,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 311544890}
+  mainCamera: {fileID: 0}
   canvas: {fileID: 922637235}
+  encounters: {fileID: 0}
+  worldGen: {fileID: 0}
   audioSource: {fileID: 1480640594}
   key: {fileID: 8300000, guid: ddaaf058655d4474b9c8d846228ff576, type: 3}
   good: {fileID: 8300000, guid: 0973514902470b348bae52e9a466e23f, type: 3}
