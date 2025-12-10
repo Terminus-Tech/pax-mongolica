@@ -32,19 +32,42 @@ public class WorldGen : MonoBehaviour
     void Start()
     {
         roadArea = new Vector2Int(mapSize.x / roadWidth, mapSize.y / roadWidth);
+        roadPoints.Add(new Vector2Int(0, UnityEngine.Random.Range(0, roadArea.y)));
         DrawBorder();
         GenerateRoad();
+        FillSand();
     }
 
     void DrawBorder()
     {
         for (int x = -mapBorder; x <= mapSize.x + mapBorder; x++)
         {
-            if (0 > x || x >= mapSize.x)
+            if (0 > x)
             {
                 for (int y = -mapBorder; y <= mapSize.y + mapBorder; y++)
                 {
-                    boundary.SetTile(new Vector3Int(x, y, 0), tile);
+                    if (roadPoints[0].y * roadWidth > y || y >= roadPoints[0].y * roadWidth + roadWidth)
+                    {
+                        boundary.SetTile(new Vector3Int(x, y, 0), tile);
+                    }
+                    else
+                    {
+                        boundary.SetTile(new Vector3Int(x, y, 0), roadTile);
+                    }
+                }
+            }
+            else if (x >= mapSize.x)
+            {
+                for (int y = -mapBorder; y <= mapSize.y + mapBorder; y++)
+                {
+                    if (mapSize.y / 2 > y || y >= mapSize.y / 2 + roadWidth)
+                    {
+                        boundary.SetTile(new Vector3Int(x, y, 0), tile);
+                    }
+                    else
+                    {
+                        boundary.SetTile(new Vector3Int(x, y, 0), roadTile);
+                    }
                 }
             }
             else
@@ -62,9 +85,6 @@ public class WorldGen : MonoBehaviour
 
     void GenerateRoad()
     {
-        roadPoints.Add(new Vector2Int(0, UnityEngine.Random.Range(0, roadArea.y)));
-        // Z-values: 0 = right, 1 = Up, 2 = down, 3 = left, 4 = right/up, 5 = right/down, 6 = left/up, 7 = left/down, 8 = up/down
-
         Vector2Int curPos;
 
         bool generating = true;
@@ -151,9 +171,23 @@ public class WorldGen : MonoBehaviour
 
         void CalcChances()
         {
-            float chance = Mathf.Clamp(( -(( curPos.x / roadArea.x ) * ( curPos.y / roadArea.y )) + 0.5f + (0.5f * (curPos.x / roadArea.x)) ), 0, 1);
-            upCh = vrtCh * chance;
-            Debug.Log((-(curPos.x / roadArea.x) + " * " + (curPos.y / roadArea.y) + " + 0.5f " + (0.5f * (curPos.x / roadArea.x)) + " | downCh: " + (vrtCh - upCh) + " | backCh: " + (1 - (fwdCh + vrtCh)));
+            //float chance = Mathf.Clamp(( -(( curPos.x / roadArea.x ) * ( curPos.y / roadArea.y )) + 0.5f + (0.5f * (curPos.x / roadArea.x)) ), 0, 1);
+            //upCh = vrtCh * chance;
+            upCh = vrtCh / 2;
+        }
+    }
+
+    void FillSand()
+    {
+        for (int x = 0; x < mapSize.x; x++)
+        {
+            for (int y = 0; y < mapSize.y; y++)
+            {
+                if (road.GetTile(new Vector3Int(x, y, 0)) == null)
+                {
+                    ground.SetTile(new Vector3Int(x, y, 0), tile);
+                }
+            }
         }
     }
 }

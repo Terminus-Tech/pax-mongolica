@@ -701,7 +701,7 @@ MonoBehaviour:
   footstepAudio: {fileID: 311544898}
   speed: 2
   moveable: 0
-  rations: 70
+  rations: 100
 --- !u!95 &311544896
 Animator:
   serializedVersion: 7
