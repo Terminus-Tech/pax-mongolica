@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,11 +10,11 @@ public class PlayerController : MonoBehaviour
     public GameObject gameController;
     public AudioSource footstepAudio;
 
-    Vector2 inputDir = Vector2.zero;
-    Vector2 gridPos = Vector2.zero;
+    public Vector2 inputDir = Vector2.zero;
+    public Vector2 gridPos = Vector2.zero;
 
-    float moveTime = 0;
-    bool isMoving = false;
+    public float moveTime = 0;
+    public bool isMoving = false;
     public float speed = 1;
     public bool moveable = false;
     public int rations;
@@ -63,14 +64,14 @@ public class PlayerController : MonoBehaviour
 
         if (Vector2.Distance(rb.transform.position, gridPos + inputDir) < 0.1f)
         {
-            if (isMoving)
+            if (isMoving && SceneManager.GetActiveScene().name == "MainScene")
             {
                 rations--;
             }
             isMoving = false;
         }
 
-        if (rations <= 0 && moveable)
+        if (rations <= 0 && moveable && SceneManager.GetActiveScene().name == "MainScene")
         {
             gameController.GetComponent<GameController>().Encounter("lose", new string[] { "You lose...\n>", "Press any key to try again" });
         }
@@ -98,11 +99,12 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Bound"))
         {
-            Debug.Log("Collided with wall!");
+            Debug.Log("Collided with wall/bound!");
+            rb.transform.position = gridPos;
             isMoving = false;
         }
     }

@@ -16,6 +16,8 @@ public class WorldGen : MonoBehaviour
     public Tile tile;
     public RuleTile roadTile;
 
+    public List<Tile> clutterTiles = new List<Tile>();
+
     public Vector2Int mapSize;
     public int mapBorder;
     public int roadWidth;
@@ -26,8 +28,14 @@ public class WorldGen : MonoBehaviour
     public float upCh;
     public float branchCh;
 
-    public Vector2Int startPos;
-    public List<Vector2Int> roadPoints = new List<Vector2Int>();
+    public List<GameObject> encounterPrefabs;
+    public int minEncounters;
+    public int maxEncounters;
+
+    Vector2Int startPos;
+    List<Vector2Int> roadPoints = new List<Vector2Int>();
+
+    List<Vector3Int> encounterPositions = new List<Vector3Int>();
 
     public void GenerateMap(GameObject player, GameObject mainCamera, GameObject encounters)
     {
@@ -37,35 +45,13 @@ public class WorldGen : MonoBehaviour
 
         DrawBorder();
         GenerateRoad();
-        FillSand();
+        GenerateEncounters(encounters);
+        FillMap();
 
-        // Position player and camera
+        // Position player, camera, and goal
         player.GetComponent<Transform>().position = new Vector3(0, startPos.y * roadWidth, 0);
         mainCamera.GetComponent<Transform>().position = new Vector3(5, startPos.y * roadWidth, -10);
-
-        // Position encounters
-        for (int i = 0; i < encounters.transform.childCount -1; i++)
-        {
-            GameObject encounter = encounters.transform.GetChild(i).gameObject;
-            bool placed = false;
-            int iterations = 0;
-            while (!placed && iterations < 1000)
-            {
-                Vector3Int encounterPos = new Vector3Int(UnityEngine.Random.Range(1, roadArea.x - 1), UnityEngine.Random.Range(1, roadArea.y - 1), 0);
-                if (road.GetTile(encounterPos) != null)
-                {
-                    encounter.GetComponent<Transform>().position = encounterPos;
-                    placed = true;
-                }
-                iterations++;
-            }
-            if (iterations >= 1000)
-            {
-                Debug.Log("Encounter placement aborted: too many iterations");
-            }
-                
-        }
-        encounters.transform.GetChild(encounters.transform.childCount - 1).gameObject.GetComponent<Transform>().position = new Vector3(mapSize.x, mapSize.y / 2 + 0.5f, 0); // Place goal at the end
+        encounters.transform.GetChild(0).transform.position = new Vector3(mapSize.x, mapSize.y / 2 + 0.5f, 0);
     }
 
     void DrawBorder()
@@ -206,17 +192,58 @@ public class WorldGen : MonoBehaviour
         //}
     }
 
-    void FillSand()
+    void FillMap()
     {
-        for (int x = 0; x < mapSize.x; x++)
+        Vector3Int mapPos = Vector3Int.zero;
+        for (mapPos.x = 0; mapPos.x < mapSize.x; mapPos.x++)
         {
-            for (int y = 0; y < mapSize.y; y++)
+            for (mapPos.y = 0; mapPos.y < mapSize.y; mapPos.y++)
             {
-                if (road.GetTile(new Vector3Int(x, y, 0)) == null)
+                if (road.GetTile(mapPos) == null)
                 {
-                    ground.SetTile(new Vector3Int(x, y, 0), tile);
+                    ground.SetTile(mapPos, tile);
+
+                    //randomly place clutter on non-road tiles
+                    if (UnityEngine.Random.value < 0.05f && (road.GetTile(mapPos) == null))
+                    {
+                        clutter.SetTile(mapPos, clutterTiles[UnityEngine.Random.Range(0, clutterTiles.Count - 1)]);
+                    }
                 }
+
+                
             }
+        }
+    }
+
+    void GenerateEncounters(GameObject encounters)
+    {
+        int numberOfEncounters = UnityEngine.Random.Range(minEncounters, maxEncounters);
+        // Position encounters
+        for (int i = 0; i < numberOfEncounters; i++)
+        {
+            
+            
+            Vector3Int encounterPos;
+            bool placed = false;
+            int iterations = 0;
+            
+            while (!placed && iterations < 1000)
+            {
+                encounterPos = new Vector3Int(UnityEngine.Random.Range(1, mapSize.x - 1), UnityEngine.Random.Range(1, mapSize.y - 1), 0);
+                if (road.GetTile(encounterPos) != null && !encounterPositions.Contains(encounterPos))
+                {
+                    GameObject encounter = Instantiate(encounterPrefabs[UnityEngine.Random.Range(0, encounterPrefabs.ToArray().Length)], encounterPos, Quaternion.identity, encounters.transform);
+                    encounter.GetComponent<Encounter>().gameController = GameObject.Find("GameController");
+                    encounterPositions.Add(encounterPos);
+                    placed = true;
+                }
+                iterations++;
+            }
+            if (iterations >= 1000)
+            {
+                Debug.Log("Encounter placement aborted: too many iterations");
+            }
+
         }
     }
 }
