@@ -14,5 +14,9 @@ public class Encounter : MonoBehaviour
         {
             gameController.GetComponent<GameController>().Encounter(encounterType, dialogLines);
         }
+        if (encounterType == "friendly" || encounterType == "hostile")
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

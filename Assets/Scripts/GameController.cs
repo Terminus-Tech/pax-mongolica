@@ -1,11 +1,7 @@
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -33,29 +29,34 @@ public class GameController : MonoBehaviour
     public int hostileRations;
     public int terrainRations;
 
+    public string[] menuLines = { "" };
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (SceneManager.GetActiveScene().name == "MainScene")
         {
             worldGen.GenerateMap(player, mainCamera, encounters);
-            Encounter("menu", new string[] { "Press any key to begin" });
+            Encounter("menu", menuLines);
         }
-            
     }
 
     private void FixedUpdate()
     {
         if (dialogActive)
         {
-            if (dialogIndex < textlist.Length)
+            if (dialogIndex <= textlist.Length)
             {
-                if (!dialogProgress && Keyboard.current.anyKey.IsActuated())
+                if (!dialogProgress && Keyboard.current.enterKey.IsActuated())
                 {
-                    canvas.transform.GetChild(8).gameObject.GetComponent<TextMeshProUGUI>().text = textlist[dialogIndex];
                     dialogIndex++;
+                    if (dialogIndex >= textlist.Length)
+                    {
+                        return;
+                    }
+                    canvas.transform.GetChild(9).gameObject.GetComponent<TextMeshProUGUI>().text = textlist[dialogIndex];
                     dialogProgress = true;
-                } else if (dialogProgress && !Keyboard.current.anyKey.IsActuated())
+                } else if (dialogProgress && !Keyboard.current.enterKey.IsActuated())
                 {
                     dialogProgress = false;
                 }
@@ -67,42 +68,46 @@ public class GameController : MonoBehaviour
                     case "menu":
                         canvas.transform.GetChild(0).gameObject.SetActive(false);
 
-                        canvas.transform.GetChild(6).gameObject.SetActive(true);
                         canvas.transform.GetChild(7).gameObject.SetActive(true);
+                        canvas.transform.GetChild(8).gameObject.SetActive(true);
                         break;
                     case "friendly":
                         canvas.transform.GetChild(1).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations += friendlyRations;
-
-                        encounters.transform.GetChild(0).gameObject.SetActive(false);
                         audioSource.PlayOneShot(key);
                         break;
                     case "hostile":
                         canvas.transform.GetChild(2).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations -= hostileRations;
-
-                        encounters.transform.GetChild(1).gameObject.SetActive(false);
                         break;
                     case "terrain":
                         canvas.transform.GetChild(3).gameObject.SetActive(false);
                         player.GetComponent<PlayerController>().rations -= terrainRations;
                         break;
-                    case "win":
+                    case "lose":
+                        if (SceneManager.GetActiveScene().name == "MainScene")
+                            SceneManager.LoadScene("MainScene");
+                        else
+                        {
+                            SceneManager.LoadScene("TownScene");
+                        }
+                        break;
+                    case "town":
                         SceneManager.LoadScene("TownScene");
                         break;
-                    case "lose":
+                    case "win":
                         SceneManager.LoadScene("MainScene");
                         break;
                 }
 
-                canvas.transform.GetChild(8).gameObject.GetComponent<TextMeshProUGUI>().text = "";
+                canvas.transform.GetChild(9).gameObject.GetComponent<TextMeshProUGUI>().text = "";
 
                 player.GetComponent<PlayerController>().moveable = true;
                 dialogActive = false;
-                Debug.Log("Encounter ended.");
+                Debug.Log("Encounter ended. Index: " + dialogIndex + " textLength: " + textlist.Length);
             }
         }
-        canvas.transform.GetChild(7).gameObject.GetComponent<TextMeshProUGUI>().text = $"x {player.GetComponent<PlayerController>().rations}";
+        canvas.transform.GetChild(8).gameObject.GetComponent<TextMeshProUGUI>().text = $"x {player.GetComponent<PlayerController>().rations}";
     }
 
     public void Encounter(string type, string[] text)
@@ -117,9 +122,11 @@ public class GameController : MonoBehaviour
         {
             case "menu":
                 canvas.transform.GetChild(0).gameObject.SetActive(true);
+                audioSource.PlayOneShot(good);
                 break;
             case "friendly":
                 canvas.transform.GetChild(1).gameObject.SetActive(true);
+                audioSource.PlayOneShot(good);
                 break;
             case "hostile":
                 canvas.transform.GetChild(2).gameObject.SetActive(true);
@@ -129,17 +136,21 @@ public class GameController : MonoBehaviour
                 canvas.transform.GetChild(3).gameObject.SetActive(true);
                 audioSource.PlayOneShot(bad);
                 break;
-            case "win":
+            case "lose":
                 canvas.transform.GetChild(4).gameObject.SetActive(true);
+                audioSource.PlayOneShot(bad);
+                break;
+            case "town":
+                canvas.transform.GetChild(5).gameObject.SetActive(true);
                 audioSource.PlayOneShot(good);
                 break;
-            case "lose":
-                canvas.transform.GetChild(5).gameObject.SetActive(true);
-                audioSource.PlayOneShot(bad);
+            case "win":
+                canvas.transform.GetChild(6).gameObject.SetActive(true);
+                audioSource.PlayOneShot(good);
                 break;
         }
 
-        canvas.transform.GetChild(8).gameObject.GetComponent<TextMeshProUGUI>().text = textlist[0];
+        canvas.transform.GetChild(9).gameObject.GetComponent<TextMeshProUGUI>().text = textlist[0];
         dialogActive = true;
         Debug.Log("Encounter started: " + encounterType);
     }
